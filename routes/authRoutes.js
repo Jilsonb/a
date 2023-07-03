@@ -70,16 +70,6 @@ router.get('/login',
     })
 );
 
-router.get('/auth/google/callback',
-    passport.authenticate('google', {
-        failureRedirect: '/error'
-    }),
-    (req, res) => {
-        // Successful authentication, redirect to saved route or success.
-        const returnTo = req.session.returnTo;
-        delete req.session.returnTo;
-        res.redirect(returnTo || '/success');
-    });
   
     router.get('/auth/google/callback',
     passport.authenticate('google', {
