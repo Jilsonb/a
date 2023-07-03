@@ -1,0 +1,26 @@
+<!-- list.ejs -->
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Listagem de Itens</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+  <%- include('head'); -%>
+</head>
+<body>
+  <h1>Listagem de Produtos</h1>
+  <ol>
+    <% items.forEach(item => { %>
+      <li>
+        <form method="POST" action="/delete/<%= item._id %>" method="POST">
+          <h2><%= item.title %></h2>
+          <p><%= item.description %></p>
+          <p><%= item.date %></p>
+          <a href="/edit/<%= item._id %>" class="btn btn-primary">Editar</a>
+          <button class="fa fa-trash-o" type="submit"></button>
+        </form>
+      </li>
+    <% }); %>
+  </ol>
+</body>
+<%- include('foot'); -%>
+</html>
