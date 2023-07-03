@@ -1,0 +1,5 @@
+# Arquivos executáveis
+*.exe
+
+# Pasta node_modules
+node_modules/
