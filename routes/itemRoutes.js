@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
+const middleware = require('../services/middleware');
 const Item = require('../models/Item');
+
 
 // Middleware para verificar autenticação
 const isAuth = (req, res, next) => {
@@ -12,26 +14,43 @@ const isAuth = (req, res, next) => {
   res.redirect('/auth/google');
 };
 
-
 // Rota para exibir o formulário de criação de um novo item
-router.get('/create', (req, res) => {
-  // Verificar se o usuário está autenticado
-  if (!req.user) {
-    return res.redirect('/login');
-  }
-
+router.get('/create', middleware.isAuth, (req, res) => {
   res.render('create');
 });
 
-
-// Rota para listar todos os itens de um utilizador
-router.get('/list', async (req, res) => {
+// Rota para processar o envio do formulário e criar um novo item
+router.post('/create', middleware.isAuth, async (req, res) => {
   try {
     // Verificar se o usuário está autenticado
     if (!req.user) {
       return res.redirect('/login');
     }
 
+    // Extrair os dados do formulário
+    const { title, description, date } = req.body;
+
+    // Criar o novo item
+    const newItem = {
+      title,
+      description,
+      date,
+      createdBy: req.user.googleId, // Armazenar o ID do usuário que criou o item
+    };
+
+    // Salvar o novo item no banco de dados
+    await Item.create(newItem);
+    res.redirect('/list');
+  } catch (err) {
+    console.error(err);
+    res.redirect('/error');
+  }
+});
+
+
+// Rota para listar todos os itens de um utilizador
+router.get('/list', middleware.isAuth, async (req, res) => {
+  try {
     const itemCollection = await Item.find({ createdBy: req.user.googleId });
     res.render('list', { items: itemCollection });
   } catch (err) {
@@ -40,28 +59,28 @@ router.get('/list', async (req, res) => {
   }
 });
 
-// Rota para processar o envio do formulário e criar um novo item
-router.post('/create', async (req, res) => {
-  // Verificar se o usuário está autenticado
-  if (!req.user) {
-    return res.redirect('/login');
-  }
+// // Rota para processar o envio do formulário e criar um novo item
+// router.post('/create', async (req, res) => {
+//   // Verificar se o usuário está autenticado
+//   if (!req.user) {
+//     return res.redirect('/login');
+//   }
 
-  // Extrair os dados do formulário
-  const { title, description, date } = req.body;
+//   // Extrair os dados do formulário
+//   const { title, description, date } = req.body;
 
-  // Criar o novo item
-  const newItem = {
-    title,
-    description,
-    date,
-    createdBy: req.user.googleId, // Armazenar o ID do usuário que criou o item
-  };
+//   // Criar o novo item
+//   const newItem = {
+//     title,
+//     description,
+//     date,
+//     createdBy: req.user.googleId, // Armazenar o ID do usuário que criou o item
+//   };
 
-  // Salvar o novo item no banco de dados
-  await Item.create(newItem);
-  res.redirect('/list');
-});
+//   // Salvar o novo item no banco de dados
+//   await Item.create(newItem);
+//   res.redirect('/list');
+// });
 // Rota para exibir um item específico
 router.get('/:itemId', async (req, res) => {
   // Verificar se o usuário está autenticado
