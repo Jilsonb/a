@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const Item = require('../models/Item');
-const middleware = require('../services/middleware');
 const { isAuth } = require('../services/middleware');
 
 // Rota para exibir o formulário de criação de um novo item
