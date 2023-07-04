@@ -1,15 +1,15 @@
 const express = require('express');
 const router = express.Router();
-const middleware = require('../services/middleware');
+const { isAuth } = require('../services/middleware');;
 const Item = require('../models/Item');
 
 // Rota para exibir o formulário de criação de um novo item
-router.get('/create', middleware.isAuth, (req, res) => {
+router.get('/create', isAuth, (req, res) => {
   res.render('create');
 });
 
 // Rota para processar o envio do formulário e criar um novo item
-router.post('/create', middleware.isAuth, async (req, res) => {
+router.post('/create', isAuth, async (req, res) => {
   try {
     // Verificar se o usuário está autenticado
     if (!req.user) {
@@ -38,7 +38,7 @@ router.post('/create', middleware.isAuth, async (req, res) => {
 
 
 // Rota para listar todos os itens de um utilizador
-router.get('/list', middleware.isAuth, async (req, res) => {
+router.get('/list', isAuth, async (req, res) => {
   try {
     const itemCollection = await Item.find({ createdBy: req.user.googleId });
     res.render('list', { items: itemCollection });
