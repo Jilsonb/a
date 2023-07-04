@@ -1,6 +1,6 @@
 const passport = require('passport');
 const router = require('express').Router();
-const { isAuth, isNotAuth } = require('../services/middleware');
+const { isAuth } = require('../services/middleware');
 
 router.get('/', (req, res) => {
     if (req.isAuthenticated()) {
