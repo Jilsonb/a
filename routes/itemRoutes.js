@@ -3,17 +3,6 @@ const router = express.Router();
 const middleware = require('../services/middleware');
 const Item = require('../models/Item');
 
-
-// Middleware para verificar autenticação
-const isAuth = (req, res, next) => {
-  // Se o usuário estiver autenticado, continue com a próxima rota
-  if (req.isAuthenticated()) {
-    return next();
-  }
-  // Se o usuário não estiver autenticado, redirecionar para a rota de autenticação do Google
-  res.redirect('/auth/google');
-};
-
 // Rota para exibir o formulário de criação de um novo item
 router.get('/create', middleware.isAuth, (req, res) => {
   res.render('create');
