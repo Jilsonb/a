@@ -21,6 +21,30 @@ router.get('/create', middleware.isAuth, (req, res) => {
 
 // Rota para processar o envio do formulário e criar um novo item
 router.post('/create', middleware.isAuth, async (req, res) => {
+  try {
+    // Verificar se o usuário está autenticado
+    if (!req.user) {
+      return res.redirect('/login');
+    }
+
+    // Extrair os dados do formulário
+    const { title, description, date } = req.body;
+
+    // Criar o novo item
+    const newItem = {
+      title,
+      description,
+      date,
+      createdBy: req.user.googleId, // Armazenar o ID do usuário que criou o item
+    };
+
+    // Salvar o novo item no banco de dados
+    await Item.create(newItem);
+    res.redirect('/list');
+  } catch (err) {
+    console.error(err);
+    res.redirect('/error');
+  }
 });
 
 // Rota para listar todos os itens de um utilizador
@@ -34,28 +58,7 @@ router.get('/list', middleware.isAuth, async (req, res) => {
   }
 });
 
-// Rota para processar o envio do formulário e criar um novo item
-router.post('/create', async (req, res) => {
-  // Verificar se o usuário está autenticado
-  if (!req.user) {
-    return res.redirect('/login');
-  }
 
-  // Extrair os dados do formulário
-  const { title, description, date } = req.body;
-
-  // Criar o novo item
-  const newItem = {
-    title,
-    description,
-    date,
-    createdBy: req.user.googleId, // Armazenar o ID do usuário que criou o item
-  };
-
-  // Salvar o novo item no banco de dados
-  await Item.create(newItem);
-  res.redirect('/list');
-});
 // Rota para exibir um item específico
 router.get('/:itemId', async (req, res) => {
   // Verificar se o usuário está autenticado
