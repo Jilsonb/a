@@ -34,12 +34,19 @@ router.get('/success', (req, res) => {
     }
 });
 
-router.get('/resource', isAuth, (req, res, next) => {
+// Rota "resource" com "if (req.user)"
+router.get('/resource', (req, res, next) => {
+  // Verificar se o usuário está autenticado (verificando se req.user está definido)
+  if (req.user) {
+    // Renderizar a página "resource" somente se o usuário estiver autenticado
     res.render('resource', {
-        authenticated: req.isAuthenticated()
+      authenticated: true // Ou use req.isAuthenticated() se preferir
     });
+  } else {
+    // Se o usuário não estiver autenticado, redirecionar para a rota de autenticação do Google
+    res.redirect('/auth/google');
+  }
 });
-
 router.get('/status', (req, res, next) => {
     res.render('status', {
         status: req
